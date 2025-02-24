@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التحقق من الهوية - Binance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #FCD535;
+            --background: #1E2329;
+            --surface: #2B3139;
+            --text-primary: #EAECEF;
+        }
+
+        body {
+            font-family: 'Segoe UI Arabic', sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 20px auto;
+            background: var(--surface);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #373d45;
+            margin: 20px 0;
+            border-radius: 2px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        select, .radio-card, .upload-area {
+            width: 100%;
+            padding: 12px;
+            background: #3a4048;
+            border: 1px solid #464d57;
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 12px;
+            flex-direction: column;
+        }
+
+        .radio-card {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .radio-card:hover {
+            border-color: var(--primary);
+        }
+
+        .radio-card.active {
+            border-color: var(--primary);
+            background: rgba(252, 213, 53, 0.1);
+        }
+
+        .upload-area {
+            border: 2px dashed #464d57;
+            text-align: center;
+            padding: 40px 20px;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+        }
+
+        .preview-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .preview-box {
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            background: #3a4048;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: #1E2329;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background: #e6b800;
+        }
+
+        .status-card {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .status-icon {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 3px solid #464d57;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+    </div>
+
+    <!-- Step 1 - Document Type -->
+    <div id="step1" class="container">
+        <h2>اختر نوع الوثيقة</h2>
+        <div class="form-group">
+            <label>البلد المُصدر</label>
+            <select id="country">
+                <option value="yemen">اليمن</option>
+                <option value="other">دولة أخرى</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>نوع الوثيقة</label>
+            <div class="radio-group">
+                <div class="radio-card" onclick="selectDocument('idCard')">
+                    <input type="radio" name="documentType" id="idCard" checked hidden>
+                    <i class="fas fa-id-card" style="margin-left: 12px;"></i>
+                    <span>بطاقة الهوية الوطنية</span>
+                </div>
+                
+                <div class="radio-card" onclick="selectDocument('driverLicense')">
+                    <input type="radio" name="documentType" id="driverLicense" hidden>
+                    <i class="fas fa-car" style="margin-left: 12px;"></i>
+                    <span>رخصة القيادة</span>
+                </div>
+                
+                <div class="radio-card" onclick="selectDocument('passport')">
+                    <input type="radio" name="documentType" id="passport" hidden>
+                    <i class="fas fa-passport" style="margin-left: 12px;"></i>
+                    <span>جواز السفر</span>
+                </div>
+            </div>
+        </div>
+        <button class="btn-primary" onclick="nextStep(2)">المتابعة</button>
+    </div>
+
+    <!-- Step 2 - Upload Instructions -->
+    <div id="step2" class="container hidden">
+        <h2>متطلبات التحميل</h2>
+        <div class="form-group">
+            <div class="preview-container">
+                <div class="preview-box">
+                    <img id="frontPreview" class="preview-image" alt="Front Preview">
+                    <div class="upload-area" onclick="document.getElementById('frontFile').click()">
+                        <i class="fas fa-camera fa-2x"></i>
+                        <p>الوجه الأمامي</p>
+                    </div>
+                </div>
+                
+                <div class="preview-box">
+                    <img id="backPreview" class="preview-image" alt="Back Preview">
+                    <div class="upload-area" onclick="document.getElementById('backFile').click()">
+                        <i class="fas fa-camera fa-2x"></i>
+                        <p>الوجه الخلفي</p>
+                    </div>
+                </div>
+            </div>
+
+            <ul style="padding-right: 20px; color: #8a9199;">
+                <li>• الصور يجب أن تكون واضحة وملونة</li>
+                <li>• الحد الأقصى لحجم الملف 10MB</li>
+                <li>• التنسيقات المسموحة: JPG, PNG</li>
+                <li>• يجب أن تكون الوثيقة سارية المفعول</li>
+            </ul>
+        </div>
+        <button class="btn-primary" onclick="nextStep(3)">تحقق من الصور</button>
+    </div>
+
+    <!-- Step 3 - Verification Status -->
+    <div id="step3" class="container hidden">
+        <div class="status-card">
+            <div class="loader"></div>
+            <h3>جاري التحقق من المستندات</h3>
+            <p>عادةً ما تستغرق العملية 2-5 دقائق</p>
+            <p style="color: #8a9199; margin-top: 20px;">
+                <i class="fas fa-info-circle"></i>
+                سيتم إرسال النتيجة عبر البريد الإلكتروني والتطبيق
+            </p>
+        </div>
+    </div>
+
+    <input type="file" id="frontFile" hidden accept="image/*">
+    <input type="file" id="backFile" hidden accept="image/*">
+
+    <script>
+        let currentStep = 1;
+        const steps = 3;
+
+        function updateProgress() {
+            const progress = (currentStep / steps) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+        }
+
+        function nextStep(step) {
+            document.getElementById(`step${currentStep}`).classList.add('hidden');
+            currentStep = step;
+            document.getElementById(`step${currentStep}`).classList.remove('hidden');
+            updateProgress();
+        }
+
+        function selectDocument(type) {
+            document.querySelectorAll('.radio-card').forEach(el => el.classList.remove('active'));
+            document.getElementById(type).checked = true;
+            event.currentTarget.classList.add('active');
+        }
+
+        // Image Preview Handling
+        document.getElementById('frontFile').addEventListener('change', function(e) {
+            handleImageUpload(e, 'frontPreview');
+        });
+
+        document.getElementById('backFile').addEventListener('change', function(e) {
+            handleImageUpload(e, 'backPreview');
+        });
+
+        function handleImageUpload(event, previewId) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById(previewId).src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+</html>
